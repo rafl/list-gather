@@ -143,6 +143,7 @@ static OP *
 pp_my_padav (pTHX)
 {
   dTARGET;
+  SvREADONLY_off(TARG);
   SAVEDESTRUCTOR_X(finish_gathering, TARG);
   return PL_ppaddr[OP_PADAV](aTHX);
 }
