@@ -159,22 +159,13 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   PERL_UNUSED_ARG(namegv);
   PERL_UNUSED_ARG(psobj);
 
-  lex_read_space(0);
-  if (lex_peek_unichar(0) != '{')
-    croak("syntax error");
-  lex_read_unichar(0);
-
   blk_floor = Perl_block_start(aTHX_ 1);
   initop = mygenop_gather(aTHX_ GENOP_GATHER_INTRO);
   blkop = op_prepend_elem(OP_LINESEQ, initop,
-                          parse_stmtseq(0));
+                          parse_block(0));
   /* TODO: readonly guard */
   blkop = op_append_elem(OP_LINESEQ, blkop, newSTATEOP(0, NULL, mygenop_gather(aTHX_ 0)));
   blkop = Perl_block_end(aTHX_ blk_floor, blkop);
-
-  if (lex_peek_unichar(0) != '}')
-    croak("syntax error");
-  lex_read_unichar(0);
 
   *flagsp |= CALLPARSER_PARENS; /* FIXME: ??? */
 
