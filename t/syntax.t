@@ -5,14 +5,17 @@ use Test::Fatal;
 
 use gather;
 
-eval 'sub { gather { take 42 }; 42 }';
-is $@, '';
+{
+    no warnings 'void';
+    my $x = eval 'sub { gather { take 42 }; 42 }';
+    is $@, '';
 
-eval 'sub { gather({ take 42 }); 42 }';
-is $@, '';
+    eval 'sub { gather({ take 42 }); 42 }';
+    is $@, '';
 
-eval 'sub { gather  (  { take 42 }  )  ; 42 }';
-is $@, '';
+    eval 'sub { gather  (  { take 42 }  )  ; 42 }';
+    is $@, '';
+}
 
 eval 'sub { gather { take 42 } 42 }';
 like $@, qr/^syntax error/;
