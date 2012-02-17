@@ -177,9 +177,17 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
 {
   int blk_floor;
   OP *blkop, *initop;
+  bool had_paren;
 
   PERL_UNUSED_ARG(namegv);
   PERL_UNUSED_ARG(psobj);
+
+  lex_read_space(0);
+  had_paren = lex_peek_unichar(0) == '(';
+  if (had_paren) {
+    lex_read_unichar(0);
+    lex_read_space(0);
+  }
 
   blk_floor = Perl_block_start(aTHX_ 1);
   initop = mygenop_gather(aTHX_ GENOP_GATHER_INTRO);
@@ -189,6 +197,12 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
                          newSTATEOP(0, NULL, mygenop_gather(aTHX_ 0)));
   blkop = Perl_block_end(aTHX_ blk_floor, blkop);
 
+  if (had_paren) {
+    lex_read_space(0);
+    if (lex_peek_unichar(0) != ')')
+      croak("syntax error");
+    lex_read_unichar(0);
+  }
   *flagsp |= CALLPARSER_PARENS; /* FIXME: ??? */
 
   return op_scope(blkop);
