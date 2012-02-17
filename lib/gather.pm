@@ -8,7 +8,10 @@ use Devel::CallChecker;
 
 use XSLoader;
 
-XSLoader::load(__PACKAGE__);
+XSLoader::load(
+    __PACKAGE__,
+    $gather::{VERSION} ? ${ $gather::{VERSION} } : (),
+);
 
 my @keywords;
 BEGIN { @keywords = qw(gather take gathered) }

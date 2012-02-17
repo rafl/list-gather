@@ -2,18 +2,13 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
-use Devel::CallChecker;
-use Devel::CallParser;
-use IO::File;
+use lib 'inc';
+use MMHelper;
 
-IO::File->new('callchecker0.h', 'w')->print(
-    Devel::CallChecker::callchecker0_h,
-);
-
-IO::File->new('callparser.h', 'w')->print(
-    Devel::CallParser::callparser1_h,
-);
+eval MMHelper::header_generator();
 
 WriteMakefile(
-    NAME => 'gather',
+    NAME    => 'gather',
+    CCFLAGS => MMHelper::ccflags_static('dev'),
+    MMHelper::mm_args(),
 );
