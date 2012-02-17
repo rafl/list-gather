@@ -72,5 +72,15 @@ is((scalar gather({
     my $v = 42;
 })), 10);
 
+() = gather {
+    is scalar(gathered), 0;
+    my @g = gathered;
+    is @g, 0;
+
+    take 23, 42, 13;
+    is scalar(gathered), 3;
+    @g = gathered;
+    is @g, 3;
+};
 
 done_testing;
