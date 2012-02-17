@@ -14,8 +14,6 @@ pp_take (pTHX)
   for (++MARK; MARK <= SP; MARK++)
     av_push((AV *)TARG, newSVsv(*MARK));
 
-  sv_dump(TARG);
-
   if (GIMME_V != G_VOID)
     PUSHs(&PL_sv_undef);
 
