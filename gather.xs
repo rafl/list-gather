@@ -11,6 +11,9 @@ pp_take (pTHX)
   dMARK;
   dTARGET;
 
+  if (SvREADONLY(TARG))
+    croak("attempting to take after gathering already completed");
+
   for (++MARK; MARK <= SP; MARK++)
     av_push((AV *)TARG, newSVsv(*MARK));
 
@@ -132,6 +135,20 @@ pad_add_my_array_pvn (pTHX_ const char *namepv, STRLEN namelen)
   return offset;
 }
 
+static void
+finish_gathering (pTHX_ AV *gatherer)
+{
+  SvREADONLY_on(gatherer);
+}
+
+static OP *
+pp_my_padav (pTHX)
+{
+  dTARGET;
+  SAVEDESTRUCTOR_X(finish_gathering, TARG);
+  return PL_ppaddr[OP_PADAV](aTHX);
+}
+
 #define GENOP_GATHER_INTRO 0x1
 
 static OP *
@@ -141,11 +158,17 @@ mygenop_gather (pTHX_ U32 flags)
 
   pvarop = newOP(OP_PADAV,
                  (flags & GENOP_GATHER_INTRO) ? (OPpLVAL_INTRO<<8) : 0);
-  pvarop->op_targ = (flags & GENOP_GATHER_INTRO)
-    ? pad_add_my_array_pvn(aTHX_ "@gather::gatherer",
-                           sizeof("@gather::gatherer") - 1)
-    : pad_findmy("@gather::gatherer",
-                 sizeof("@gather::gatherer") - 1, 0);
+
+  if (flags & GENOP_GATHER_INTRO) {
+    pvarop->op_targ = pad_add_my_array_pvn(aTHX_ "@gather::gatherer",
+                                           sizeof("@gather::gatherer") - 1);
+    pvarop->op_ppaddr = pp_my_padav;
+    PL_hints |= HINT_BLOCK_SCOPE;
+  }
+  else {
+    pvarop->op_targ = pad_findmy("@gather::gatherer",
+                                 sizeof("@gather::gatherer") - 1, 0);
+  }
 
   return pvarop;
 }
@@ -163,7 +186,6 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   initop = mygenop_gather(aTHX_ GENOP_GATHER_INTRO);
   blkop = op_prepend_elem(OP_LINESEQ, initop,
                           parse_block(0));
-  /* TODO: readonly guard */
   blkop = op_append_elem(OP_LINESEQ, blkop,
                          newSTATEOP(0, NULL, mygenop_gather(aTHX_ 0)));
   blkop = Perl_block_end(aTHX_ blk_floor, blkop);
