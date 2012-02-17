@@ -73,6 +73,9 @@ myck_entersub_take (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
   gatherer_offset = pad_findmy("@gather::gatherer",
                                sizeof("@gather::gatherer") - 1, 0);
 
+  if (gatherer_offset == NOT_IN_PAD)
+    croak("illegal use of take outside of gather");
+
   entersubop = ck_entersub_args_list(entersubop);
   listop = cUNOPx(entersubop)->op_first;
 
