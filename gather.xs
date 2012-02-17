@@ -11,6 +11,7 @@ pp_take (pTHX)
   dMARK;
   dTARGET;
 
+  /* FIXME: push the other way around */
   while (SP > MARK)
     av_push((AV *)TARG, newSVsv(POPs));
 
@@ -203,9 +204,7 @@ BOOT:
 
   cv_set_call_parser(gather_cv, myparse_args_gather, &PL_sv_undef);
 
-  cv_set_call_checker(gather_cv, myck_entersub_gather,
-                      (SV*)gather_cv);
-  cv_set_call_checker(take_cv, myck_entersub_take,
-                      (SV*)take_cv);
+  cv_set_call_checker(gather_cv, myck_entersub_gather, (SV*)gather_cv);
+  cv_set_call_checker(take_cv, myck_entersub_take, (SV*)take_cv);
 }
 
