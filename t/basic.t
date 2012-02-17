@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More 0.98;
+use Test::Fatal;
 
 BEGIN { use_ok 'gather' };
 
@@ -45,5 +46,11 @@ is_deeply
         }
     }],
     [qw(a b)];
+
+is exception {
+    for my $x (qw(a b c)) {
+        gather { take $x };
+    }
+}, undef;
 
 done_testing;
