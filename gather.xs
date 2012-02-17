@@ -24,10 +24,10 @@ pp_gather (pTHX)
   dSP;
   AV *gatherer;
 
-  av_push(gatherers, newAV());
+  av_push(gatherers, (SV *)newAV());
   call_gather_coderef(aTHX_ POPs);
 
-  gatherer = av_pop(gatherers);
+  gatherer = (AV *)av_pop(gatherers);
 
   if (GIMME_V != G_VOID) {
     I32 i, n_gathered = av_len(gatherer);
@@ -53,7 +53,7 @@ pp_take (pTHX)
   dMARK;
   AV *gatherer;
 
-  gatherer = *av_fetch(gatherers, av_len(gatherers), 0);
+  gatherer = (AV *)*av_fetch(gatherers, av_len(gatherers), 0);
 
   while (SP > MARK)
     av_push(gatherer, POPs);
@@ -116,7 +116,10 @@ myck_entersub_gather (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 static OP *
 myck_entersub_take (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 {
-  OP *pushop, *argop = NULL, *listop, *lastop, *rv2cvop;
+  OP *listop, *lastop, *rv2cvop;
+
+  PERL_UNUSED_ARG(namegv);
+  PERL_UNUSED_ARG(protosv);
 
   entersubop = ck_entersub_args_list(entersubop);
   listop = cUNOPx(entersubop)->op_first;
