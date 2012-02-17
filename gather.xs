@@ -4,50 +4,6 @@
 #include "callparser.h"
 #include "XSUB.h"
 
-static void
-call_gather_coderef (pTHX_ SV *coderef)
-{
-  dSP;
-  ENTER;
-  SAVETMPS;
-  PUSHMARK(SP);
-  call_sv(coderef, G_VOID|G_DISCARD);
-  FREETMPS;
-  LEAVE;
-}
-
-static OP *
-pp_gather (pTHX)
-{
-  dSP;
-  dMARK;
-
-  warn("enter gather with %d args", sp - mark);
-
-  /*
-  av_push(gatherers, (SV *)newAV());
-  call_gather_coderef(aTHX_ POPs);
-
-  gatherer = (AV *)av_pop(gatherers);
-
-  if (GIMME_V != G_VOID) {
-    I32 i, n_gathered = av_len(gatherer);
-
-    if (n_gathered >= 0) {
-      EXTEND(SP, n_gathered + 1);
-
-      for (i = 0; i <= n_gathered; i++) {
-        mPUSHs(newSVsv(*av_fetch(gatherer, i, 0)));
-      }
-    }
-  }
-
-  SvREFCNT_dec(gatherer);
-  */
-
-  RETURN;
-}
-
 static OP *
 pp_take (pTHX)
 {
@@ -58,24 +14,12 @@ pp_take (pTHX)
   while (SP > MARK)
     av_push((AV *)TARG, POPs);
 
+  sv_dump(TARG);
+
   if (GIMME_V != G_VOID)
     PUSHs(&PL_sv_undef);
 
   RETURN;
-}
-
-static OP *
-gen_gather_op (pTHX_ OP *listop)
-{
-  OP *gatherop;
-
-  NewOpSz(0, gatherop, sizeof(UNOP));
-  gatherop->op_type = OP_RAND;
-  gatherop->op_ppaddr = pp_gather;
-  cUNOPx(gatherop)->op_flags = OPf_KIDS;
-  cUNOPx(gatherop)->op_first = listop;
-
-  return gatherop;
 }
 
 static OP *
@@ -96,34 +40,25 @@ gen_take_op (pTHX_ OP *listop, PADOFFSET gatherer_offset)
 static OP *
 myck_entersub_gather (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 {
-  OP *listop, *lastop, *rv2cvop;
+  OP *rv2cvop, *pushop, *blkop;
 
   PERL_UNUSED_ARG(namegv);
   PERL_UNUSED_ARG(protosv);
 
   entersubop = ck_entersub_args_list(entersubop);
-  listop = cUNOPx(entersubop)->op_first;
+  pushop = cUNOPx(entersubop)->op_first;
 
-  if (!listop)
-    return entersubop;
+  if (!pushop->op_sibling)
+    pushop = cUNOPx(pushop)->op_first;
 
-  entersubop->op_flags &= ~OPf_KIDS;
-  cUNOPx(entersubop)->op_first = NULL;
+  blkop = pushop->op_sibling;
+
+  rv2cvop = blkop->op_sibling;
+  blkop->op_sibling = NULL;
+  pushop->op_sibling = rv2cvop;
   op_free(entersubop);
 
-  lastop = cLISTOPx(listop)->op_first;
-  while (lastop->op_sibling != cLISTOPx(listop)->op_last) {
-    lastop = lastop->op_sibling;
-  }
-  rv2cvop = lastop->op_sibling;
-
-  lastop->op_sibling = NULL;
-  cLISTOPx(listop)->op_last = lastop;
-  op_free(rv2cvop);
-
-  op_dump(listop);
-
-  return gen_gather_op(aTHX_ listop);
+  return blkop;
 }
 
 static OP *
@@ -230,6 +165,7 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   blkop = op_prepend_elem(OP_LINESEQ, initop,
                           parse_stmtseq(0));
   /* TODO: readonly guard */
+  blkop = op_append_elem(OP_LINESEQ, blkop, newOP(OP_UNSTACK, 0));
   blkop = op_append_elem(OP_LINESEQ, blkop, mygenop_gather(aTHX_ 0));
   blkop = Perl_block_end(aTHX_ blk_floor, blkop);
 
