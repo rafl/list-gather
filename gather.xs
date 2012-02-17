@@ -233,8 +233,8 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
     if (lex_peek_unichar(0) != ')')
       croak("syntax error");
     lex_read_unichar(0);
+    *flagsp |= CALLPARSER_PARENS;
   }
-  *flagsp |= CALLPARSER_PARENS; /* FIXME: ??? */
 
   return op_scope(blkop);
 }
