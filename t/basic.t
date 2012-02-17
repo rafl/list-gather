@@ -53,4 +53,18 @@ is exception {
     }
 }, undef;
 
+gather {
+    {
+        is take(42), undef;
+        my @n = take 42;
+        is @n, 0;
+    }
+
+    {
+        is take(23, 24, 25), undef;
+        my @n = take 23, 24, 25;
+        is @n, 0;
+    }
+};
+
 done_testing;
