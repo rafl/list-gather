@@ -115,8 +115,6 @@ pad_add_my_array_pvn (pTHX_ const char *namepv, STRLEN namelen)
   PADOFFSET offset;
   SV *namesv, *myvar;
 
-  //myvar = newAV();
-  //av_store(PL_comppad, AvFILLp(PL_comppad) + 1, 0);
   myvar = *av_fetch(PL_comppad, AvFILLp(PL_comppad) + 1, 1);
   sv_upgrade(myvar, SVt_PVAV);
   offset = AvFILLp(PL_comppad);
