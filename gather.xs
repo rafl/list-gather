@@ -151,7 +151,7 @@ pp_my_padav (pTHX)
 #define GENOP_GATHER_INTRO 0x1
 
 static OP *
-mygenop_gather (pTHX_ U32 flags)
+mygenop_padav (pTHX_ U32 flags)
 {
   OP *pvarop;
 
@@ -173,6 +173,25 @@ mygenop_gather (pTHX_ U32 flags)
 }
 
 static OP *
+myck_entersub_gathered (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
+{
+  PADOFFSET gatherer_offset;
+
+  entersubop = ck_entersub_args_proto(entersubop, namegv, protosv);
+
+  gatherer_offset = pad_findmy("@gather::gatherer",
+                               sizeof("@gather::gatherer") - 1, 0);
+
+  if (gatherer_offset == NOT_IN_PAD)
+    croak("illegal use of gathered outside of gather");
+
+  op_free(entersubop);
+
+  return mygenop_padav(aTHX_ 0);
+}
+
+
+static OP *
 myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
 {
   int blk_floor;
@@ -190,11 +209,11 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   }
 
   blk_floor = Perl_block_start(aTHX_ 1);
-  initop = mygenop_gather(aTHX_ GENOP_GATHER_INTRO);
+  initop = mygenop_padav(aTHX_ GENOP_GATHER_INTRO);
   blkop = op_prepend_elem(OP_LINESEQ, initop,
                           parse_block(0));
   blkop = op_append_elem(OP_LINESEQ, blkop,
-                         newSTATEOP(0, NULL, mygenop_gather(aTHX_ 0)));
+                         newSTATEOP(0, NULL, mygenop_padav(aTHX_ 0)));
   blkop = Perl_block_end(aTHX_ blk_floor, blkop);
 
   if (had_paren) {
@@ -222,16 +241,25 @@ take (...)
     PERL_UNUSED_VAR(items);
     croak("gather called as a function");
 
+void
+gathered (...)
+  PROTOTYPE:
+  CODE:
+    PERL_UNUSED_VAR(items);
+    croak("gather called as a function");
+
 BOOT:
 {
-  CV *gather_cv, *take_cv;
+  CV *gather_cv, *take_cv, *gathered_cv;
 
   gather_cv = get_cv("gather::gather", 0);
   take_cv = get_cv("gather::take", 0);
+  gathered_cv = get_cv("gather::gathered", 0);
 
   cv_set_call_parser(gather_cv, myparse_args_gather, &PL_sv_undef);
 
   cv_set_call_checker(gather_cv, myck_entersub_gather, (SV*)gather_cv);
   cv_set_call_checker(take_cv, myck_entersub_take, (SV*)take_cv);
+  cv_set_call_checker(gathered_cv, myck_entersub_gathered, (SV*)gathered_cv);
 }
 
