@@ -140,8 +140,11 @@ mygenop_gather (pTHX_ U32 flags)
 
   pvarop = newOP(OP_PADAV,
                  (flags & GENOP_GATHER_INTRO) ? (OPpLVAL_INTRO<<8) : 0);
-  pvarop->op_targ = pad_add_my_array_pvn(aTHX_ "@gather::gatherer",
-                                         sizeof("@gather::gatherer") - 1);
+  pvarop->op_targ = (flags & GENOP_GATHER_INTRO)
+    ? pad_add_my_array_pvn(aTHX_ "@gather::gatherer",
+                           sizeof("@gather::gatherer") - 1)
+    : pad_findmy("@gather::gatherer",
+                 sizeof("@gather::gatherer") - 1, 0);
 
   return pvarop;
 }
