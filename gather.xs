@@ -249,14 +249,14 @@ void
 take (...)
   CODE:
     PERL_UNUSED_VAR(items);
-    croak("gather called as a function");
+    croak("take called as a function");
 
 void
 gathered (...)
   PROTOTYPE:
   CODE:
     PERL_UNUSED_VAR(items);
-    croak("gather called as a function");
+    croak("gathered called as a function");
 
 BOOT:
 {
