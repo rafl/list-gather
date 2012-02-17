@@ -9,15 +9,17 @@ pp_take (pTHX)
 {
   dSP;
   dMARK;
+  dORIGMARK;
   dTARGET;
 
   if (SvREADONLY(TARG))
     croak("attempting to take after gathering already completed");
 
-  for (++MARK; MARK <= SP; MARK++)
-    av_push((AV *)TARG, newSVsv(*MARK));
+  while (MARK < SP)
+    av_push((AV *)TARG, newSVsv(*++MARK));
 
-  if (GIMME_V != G_VOID)
+  SP = ORIGMARK;
+  if (GIMME_V == G_SCALAR)
     PUSHs(&PL_sv_undef);
 
   RETURN;
@@ -29,7 +31,7 @@ gen_take_op (pTHX_ OP *listop, PADOFFSET gatherer_offset)
   OP *takeop;
 
   NewOpSz(0, takeop, sizeof(UNOP));
-  takeop->op_type = OP_RAND;
+  takeop->op_type = OP_SPLICE;
   takeop->op_ppaddr = pp_take;
   takeop->op_targ = gatherer_offset;
   cUNOPx(takeop)->op_flags = OPf_KIDS;
