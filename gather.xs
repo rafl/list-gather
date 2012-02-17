@@ -48,7 +48,6 @@ myck_entersub_gather (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
   PERL_UNUSED_ARG(namegv);
   PERL_UNUSED_ARG(protosv);
 
-  entersubop = ck_entersub_args_list(entersubop);
   pushop = cUNOPx(entersubop)->op_first;
 
   if (!pushop->op_sibling)
