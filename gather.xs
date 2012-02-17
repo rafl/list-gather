@@ -141,18 +141,11 @@ finish_gathering (pTHX_ AV *gatherer)
 }
 
 static OP *
-pp_my_padav_intro (pTHX)
+pp_my_padav (pTHX)
 {
   dTARGET;
   SvREADONLY_off(TARG);
   SAVEDESTRUCTOR_X(finish_gathering, TARG);
-  return PL_ppaddr[OP_PADAV](aTHX);
-}
-
-static OP *
-pp_my_padav (pTHX)
-{
-  dTARGET;
   return PL_ppaddr[OP_PADAV](aTHX);
 }
 
@@ -169,13 +162,12 @@ mygenop_padav (pTHX_ U32 flags)
   if (flags & GENOP_GATHER_INTRO) {
     pvarop->op_targ = pad_add_my_array_pvn(aTHX_ "@gather::gatherer",
                                            sizeof("@gather::gatherer") - 1);
-    pvarop->op_ppaddr = pp_my_padav_intro;
+    pvarop->op_ppaddr = pp_my_padav;
     PL_hints |= HINT_BLOCK_SCOPE;
   }
   else {
     pvarop->op_targ = pad_findmy("@gather::gatherer",
                                  sizeof("@gather::gatherer") - 1, 0);
-    pvarop->op_ppaddr = pp_my_padav;
   }
 
   return pvarop;
