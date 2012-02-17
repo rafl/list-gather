@@ -67,4 +67,10 @@ is exception {
     }
 };
 
+is((scalar gather({
+    take $_ for 0 .. 9;
+    my $v = 42;
+})), 10);
+
+
 done_testing;
