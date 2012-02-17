@@ -49,11 +49,11 @@ is_deeply
 
 is exception {
     for my $x (qw(a b c)) {
-        gather { take $x };
+        () = gather { take $x };
     }
 }, undef;
 
-gather {
+() = gather {
     {
         is take(42), undef;
         my @n = take 42;
