@@ -11,9 +11,8 @@ pp_take (pTHX)
   dMARK;
   dTARGET;
 
-  /* FIXME: push the other way around */
-  while (SP > MARK)
-    av_push((AV *)TARG, newSVsv(POPs));
+  for (++MARK; MARK <= SP; MARK++)
+    av_push((AV *)TARG, newSVsv(*MARK));
 
   sv_dump(TARG);
 
