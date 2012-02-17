@@ -163,7 +163,8 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   blkop = op_prepend_elem(OP_LINESEQ, initop,
                           parse_block(0));
   /* TODO: readonly guard */
-  blkop = op_append_elem(OP_LINESEQ, blkop, newSTATEOP(0, NULL, mygenop_gather(aTHX_ 0)));
+  blkop = op_append_elem(OP_LINESEQ, blkop,
+                         newSTATEOP(0, NULL, mygenop_gather(aTHX_ 0)));
   blkop = Perl_block_end(aTHX_ blk_floor, blkop);
 
   *flagsp |= CALLPARSER_PARENS; /* FIXME: ??? */
