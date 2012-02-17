@@ -2,6 +2,7 @@ package gather;
 
 use strict;
 use warnings;
+use Devel::CallParser;
 use Devel::CallChecker;
 
 use XSLoader;
