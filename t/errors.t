@@ -25,4 +25,11 @@ like exception { $gathered->() },
 eval 'sub { gathered }';
 like $@, qr/^illegal use of gathered outside of gather/;
 
+eval { &gather(sub{}) };
+like $@, qr/^gather called as a function/;
+eval { &take(24) };
+like $@, qr/^take called as a function/;
+eval { &gathered(24) };
+like $@, qr/^gathered called as a function/;
+
 done_testing;

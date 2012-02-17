@@ -23,4 +23,7 @@ like $@, qr/^syntax error/;
 eval 'sub { gather({ take 42 }; 42 }';
 like $@, qr/^syntax error/;
 
+eval 'sub { gather([]) }';
+like $@, qr/^syntax error/;
+
 done_testing;
