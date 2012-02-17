@@ -5,7 +5,7 @@ use Test::Fatal;
 
 use gather;
 
-my $taker = gather {
+my ($taker) = gather {
     take sub { take 42 };
 };
 
@@ -15,7 +15,7 @@ like exception { $taker->() },
 eval 'sub { take 42 }';
 like $@, qr/^illegal use of take outside of gather/;
 
-my $gathered = gather {
+my ($gathered) = gather {
     take sub { gathered }
 };
 
