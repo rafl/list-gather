@@ -12,7 +12,7 @@ pp_take (pTHX)
   dTARGET;
 
   while (SP > MARK)
-    av_push((AV *)TARG, POPs);
+    av_push((AV *)TARG, newSVsv(POPs));
 
   sv_dump(TARG);
 
