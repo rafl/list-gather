@@ -15,15 +15,19 @@ like exception { $taker->() },
 eval 'sub { take 42 }';
 like $@, qr/^illegal use of take outside of gather/;
 
-my ($gathered) = gather {
-    take sub { gathered }
-};
-
-like exception { $gathered->() },
-    qr/^attempting to call gathered after gathering already completed/;
-
 eval 'sub { gathered }';
 like $@, qr/^illegal use of gathered outside of gather/;
+
+{
+    my $gathered;
+    () = gather {
+        $gathered = sub { \gathered };
+    };
+
+    like exception {
+        push @{ $gathered->() }, 42;
+    }, qr/Modification of a read-only value attempted/;
+}
 
 eval { &gather(sub{}) };
 like $@, qr/^gather called as a function/;

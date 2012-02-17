@@ -83,4 +83,16 @@ is((scalar gather({
     is @g, 3;
 };
 
+{
+    my $gathered;
+    () = gather {
+        $gathered = sub { gathered };
+        take 3, 2, 1;
+    };
+
+    is exception {
+        is_deeply [$gathered->()], [3, 2, 1];
+    }, undef;
+}
+
 done_testing;

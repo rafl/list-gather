@@ -153,8 +153,6 @@ static OP *
 pp_my_padav (pTHX)
 {
   dTARGET;
-  if (SvREADONLY(TARG))
-    croak("attempting to call gathered after gathering already completed");
   return PL_ppaddr[OP_PADAV](aTHX);
 }
 
