@@ -16,7 +16,7 @@ XSLoader::load(
 );
 
 my @keywords;
-BEGIN { @keywords = qw(gather take gathered _gatherer_intro _gatherer_outro) } # FIXME
+BEGIN { @keywords = qw(gather take gathered) }
 
 use Sub::Exporter -setup => {
     exports => [@keywords],

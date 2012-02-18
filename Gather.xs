@@ -301,13 +301,13 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   lex_read_unichar(0);
 
   lex_stuff_pvs_("}}", 0);
-  lex_stuff_pvs_(";List::Gather::_stuff(';_gatherer_outro;}')", 0);
+  lex_stuff_pvs_(";List::Gather::_stuff(';List::Gather::_gatherer_outro;}')", 0);
   if (!had_paren)
     lex_stuff_pvs_("List::Gather::_stuff(')')", 0);
   else
     *flagsp |= CALLPARSER_PARENS;
   lex_stuff_pvs_("BEGIN{B::Hooks::EndOfScope::on_scope_end{", 0);
-  lex_stuff_pvs_("->x(do{_gatherer_intro;do{", 0);
+  lex_stuff_pvs_("->x(do{List::Gather::_gatherer_intro;do{", 0);
 
   return newSVOP(OP_CONST, 0, SvREFCNT_inc(methodwrapper_sv));
 #endif
