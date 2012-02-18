@@ -338,7 +338,7 @@ gathered (...)
 
 void
 _stuff(SV *sv)
-PROTOTYPE: $
+  PROTOTYPE: $
   CODE:
     lex_stuff_sv_(sv, 0);
 
