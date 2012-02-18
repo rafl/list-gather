@@ -178,7 +178,7 @@ mygenop_padav (pTHX_ U32 flags, GV *op_namegv)
 static OP *
 myck_entersub_gathered (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 {
-  entersubop = ck_entersub_args_proto(entersubop, namegv, protosv);
+  PERL_UNUSED_ARG(protosv);
   op_free(entersubop);
   return mygenop_padav(aTHX_ 0, namegv);
 }
