@@ -13,6 +13,10 @@
   do { ((XPVNV *)SvANY(sv))->xnv_u.xpad_cop_seq.xhigh = val; } while (0)
 #endif
 
+#ifndef PERL_PADSEQ_INTRO
+# define PERL_PADSEQ_INTRO I32_MAX
+#endif /* !PERL_PADSEQ_INTRO */
+
 static OP *
 pp_take (pTHX)
 {
