@@ -6,6 +6,8 @@ use warnings;
 use Devel::CallParser;
 use Devel::CallChecker;
 
+require B::Hooks::EndOfScope;
+
 use XSLoader;
 
 XSLoader::load(
@@ -14,7 +16,7 @@ XSLoader::load(
 );
 
 my @keywords;
-BEGIN { @keywords = qw(gather take gathered) }
+BEGIN { @keywords = qw(gather take gathered _gatherer_intro _gatherer_outro) } # FIXME
 
 use Sub::Exporter -setup => {
     exports => [@keywords],
