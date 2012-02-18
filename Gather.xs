@@ -151,6 +151,7 @@ gen_take_op (pTHX_ OP *listop, PADOFFSET gatherer_offset)
 static OP *
 myck_entersub_gatherer_intro (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 {
+  PERL_UNUSED_ARG(protosv);
   op_free(entersubop);
   return mygenop_padav(aTHX_ GENOP_GATHER_INTRO, namegv);
 }
@@ -158,6 +159,7 @@ myck_entersub_gatherer_intro (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 static OP *
 myck_entersub_gatherer_outro (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 {
+  PERL_UNUSED_ARG(protosv);
   op_free(entersubop);
   return mygenop_padav(aTHX_ 0, namegv);
 }
@@ -258,9 +260,13 @@ methodwrapper_myck_entersub (pTHX_ OP *entersubop)
 static OP *
 myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
 {
+  bool had_paren;
+#if QPARSE_DIRECTLY
   int blk_floor;
   OP *blkop, *initop;
-  bool had_paren;
+#else
+  PERL_UNUSED_ARG(namegv);
+#endif
 
   PERL_UNUSED_ARG(psobj);
 
