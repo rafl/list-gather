@@ -5,6 +5,7 @@ use lib 'inc';
 use MMHelper;
 
 extends 'Dist::Zilla::Plugin::MakeMaker::Awesome';
+with 'Dist::Zilla::Role::MetaProvider';
 
 override _build_MakeFile_PL_template => sub {
     my ($self) = @_;
@@ -21,6 +22,10 @@ override _build_MakeFile_PL_template => sub {
 
     return $tmpl;
 };
+
+sub metadata {
+    return { dynamic_config => 1 };
+}
 
 override _build_WriteMakefile_args => sub {
     my ($self) = @_;
