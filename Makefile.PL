@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 use lib 'inc';
 use MMHelper;
 
-eval MMHelper::header_generator();
+eval MMHelper::header_generator() or die $@;
 
 WriteMakefile(
     NAME    => 'List::Gather',

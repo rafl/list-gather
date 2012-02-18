@@ -41,13 +41,17 @@ use Devel::CallChecker;
 use Devel::CallParser;
 use IO::File;
 
-IO::File->new('${callchecker_h}', 'w')->print(
-    Devel::CallChecker::callchecker0_h,
-);
+write_header('${callchecker_h}', Devel::CallChecker::callchecker0_h);
+write_header('${callparser_h}', Devel::CallParser::callparser1_h);
 
-IO::File->new('${callparser_h}', 'w')->print(
-    Devel::CallParser::callparser1_h,
-);
+sub write_header {
+    my (\$header, \$content) = \@_;
+    my \$fh = IO::File->new(\$header, 'w') or die \$!;
+    \$fh->print(\$content) or die \$!;
+    \$fh->close or die \$!;
+}
+
+1;
 EOC
 }
 

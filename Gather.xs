@@ -252,4 +252,3 @@ BOOT:
   cv_set_call_checker(take_cv, myck_entersub_take, (SV*)take_cv);
   cv_set_call_checker(gathered_cv, myck_entersub_gathered, (SV*)gathered_cv);
 }
-
