@@ -3,6 +3,8 @@ package MMHelper;
 use strict;
 use warnings;
 use Config ();
+use Devel::CallChecker;
+use Devel::CallParser;
 
 my $callchecker_h = 'callchecker0.h';
 my $callparser_h = 'callparser.h';
@@ -26,6 +28,10 @@ sub ccflags_static {
 sub mm_args {
     return (
         clean => { FILES => join q{ } => $callchecker_h, $callparser_h },
+        OBJECT => join(q{ },
+                       '$(BASEEXT)$(OBJ_EXT)',
+                       Devel::CallChecker::callchecker_linkable,
+                       Devel::CallParser::callparser_linkable),
     );
 }
 
