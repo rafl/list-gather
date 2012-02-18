@@ -1,3 +1,6 @@
+0.03  Sat, 18 Feb 2012 19:12:32 +0100
+  * Add more tests for context propagation and exception handling
+
 0.02  Sat, 18 Feb 2012 17:54:02 +0100
   * Support perl 5.12 in addition to 5.14
 
