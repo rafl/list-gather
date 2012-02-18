@@ -8,7 +8,8 @@ use MMHelper;
 eval MMHelper::header_generator() or die $@;
 
 WriteMakefile(
-    NAME    => 'List::Gather',
-    CCFLAGS => MMHelper::ccflags_static('dev'),
+    NAME     => 'List::Gather',
+    NORECURS => 1,
+    CCFLAGS  => MMHelper::ccflags_static('dev'),
     MMHelper::mm_args(),
 );
