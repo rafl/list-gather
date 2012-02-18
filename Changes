@@ -1,3 +1,9 @@
+0.04  Sat, 18 Feb 2012 22:26:42 +0100
+  * Stop declaring a B::Hooks::EndOfScope dependency in META - the module is
+    only needed on old perls
+  * Improve documentation
+  * Test the bahaviour of return in a given block
+
 0.03  Sat, 18 Feb 2012 19:12:32 +0100
   * Add more tests for context propagation and exception handling
 
