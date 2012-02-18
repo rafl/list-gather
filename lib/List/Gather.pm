@@ -90,8 +90,8 @@ C<gather> returns the list of values taken during its block's execution.
 
 =func gather
 
-  gather { ... };
-  gather({ ... });
+  gather { ... }
+  gather({ ... })
 
 Executes the block it has been provided with, collecting all arguments passed to
 C<take> calls within it. After execution, the list of values collected is
@@ -105,7 +105,7 @@ Parens around the C<gather> block are optional.
 
 =func take
 
-  take LIST;
+  take LIST
 
 Collects a C<LIST> of values within the currently executing C<gather> block.
 
@@ -117,7 +117,7 @@ C<gather> block.
 
 =func gathered
 
-  gathered;
+  gathered
 
 Returns the list of items collected so far during the execution of a C<gather>
 block.
