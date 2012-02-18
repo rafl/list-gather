@@ -49,7 +49,6 @@ myck_entersub_gather (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
   PERL_UNUSED_ARG(protosv);
 
   pushop = cUNOPx(entersubop)->op_first;
-
   if (!pushop->op_sibling)
     pushop = cUNOPx(pushop)->op_first;
 
@@ -63,24 +62,29 @@ myck_entersub_gather (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
   return blkop;
 }
 
+static PADOFFSET
+pad_findgatherer (pTHX_ GV *namegv)
+{
+  PADOFFSET offset = pad_findmy("@List::Gather::gatherer",
+                                sizeof("@List::Gather::gatherer") - 1, 0);
+  if (offset == NOT_IN_PAD)
+    croak("illegal use of %s outside of gather", GvNAME(namegv));
+
+  return offset;
+}
+
 static OP *
 myck_entersub_take (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 {
   OP *listop, *lastop, *rv2cvop;
   PADOFFSET gatherer_offset;
 
-  PERL_UNUSED_ARG(namegv);
   PERL_UNUSED_ARG(protosv);
 
-  gatherer_offset = pad_findmy("@List::Gather::gatherer",
-                               sizeof("@List::Gather::gatherer") - 1, 0);
-
-  if (gatherer_offset == NOT_IN_PAD)
-    croak("illegal use of take outside of gather");
+  gatherer_offset = pad_findgatherer(aTHX_ namegv);
 
   entersubop = ck_entersub_args_list(entersubop);
   listop = cUNOPx(entersubop)->op_first;
-
   if (!listop)
     return entersubop;
 
@@ -152,7 +156,7 @@ pp_my_padav (pTHX)
 #define GENOP_GATHER_INTRO 0x1
 
 static OP *
-mygenop_padav (pTHX_ U32 flags)
+mygenop_padav (pTHX_ U32 flags, GV *op_namegv)
 {
   OP *pvarop;
 
@@ -160,14 +164,12 @@ mygenop_padav (pTHX_ U32 flags)
                  (flags & GENOP_GATHER_INTRO) ? (OPpLVAL_INTRO<<8) : 0);
 
   if (flags & GENOP_GATHER_INTRO) {
-    pvarop->op_targ = pad_add_my_array_pvn(aTHX_ "@List::Gather::gatherer",
-                                           sizeof("@List::Gather::gatherer") - 1);
+    pvarop->op_targ = pad_add_my_array_pvn(aTHX_ STR_WITH_LEN("@List::Gather::gatherer"));
     pvarop->op_ppaddr = pp_my_padav;
     PL_hints |= HINT_BLOCK_SCOPE;
   }
   else {
-    pvarop->op_targ = pad_findmy("@List::Gather::gatherer",
-                                 sizeof("@List::Gather::gatherer") - 1, 0);
+    pvarop->op_targ = pad_findgatherer(aTHX_ op_namegv);
   }
 
   return pvarop;
@@ -176,19 +178,9 @@ mygenop_padav (pTHX_ U32 flags)
 static OP *
 myck_entersub_gathered (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 {
-  PADOFFSET gatherer_offset;
-
   entersubop = ck_entersub_args_proto(entersubop, namegv, protosv);
-
-  gatherer_offset = pad_findmy("@List::Gather::gatherer",
-                               sizeof("@List::Gather::gatherer") - 1, 0);
-
-  if (gatherer_offset == NOT_IN_PAD)
-    croak("illegal use of gathered outside of gather");
-
   op_free(entersubop);
-
-  return mygenop_padav(aTHX_ 0);
+  return mygenop_padav(aTHX_ 0, namegv);
 }
 
 
@@ -199,7 +191,6 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   OP *blkop, *initop;
   bool had_paren;
 
-  PERL_UNUSED_ARG(namegv);
   PERL_UNUSED_ARG(psobj);
 
   lex_read_space(0);
@@ -210,11 +201,11 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   }
 
   blk_floor = Perl_block_start(aTHX_ 1);
-  initop = mygenop_padav(aTHX_ GENOP_GATHER_INTRO);
+  initop = mygenop_padav(aTHX_ GENOP_GATHER_INTRO, namegv);
   blkop = op_prepend_elem(OP_LINESEQ, initop,
                           parse_block(0));
   blkop = op_append_elem(OP_LINESEQ, blkop,
-                         newSTATEOP(0, NULL, mygenop_padav(aTHX_ 0)));
+                         newSTATEOP(0, NULL, mygenop_padav(aTHX_ 0, namegv)));
   blkop = Perl_block_end(aTHX_ blk_floor, blkop);
 
   if (had_paren) {
