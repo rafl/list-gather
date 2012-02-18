@@ -5,6 +5,7 @@ Makefile*
 !Makefile.PL
 *blib
 *.h
-gather.*
-!gather.xs
+Gather.*
+!Gather.xs
+List-Gather-*
 

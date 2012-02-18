@@ -3,7 +3,7 @@ use warnings;
 use Test::More 0.98;
 use Test::Fatal;
 
-BEGIN { use_ok 'gather' };
+BEGIN { use_ok 'List::Gather' };
 
 is_deeply
     [gather { take $_ for 1..10; take 99 }],

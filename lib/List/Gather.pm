@@ -1,4 +1,4 @@
-package gather;
+package List::Gather;
 # ABSTRACT: Construct lists procedurally without temporary variables
 
 use strict;
@@ -10,7 +10,7 @@ use XSLoader;
 
 XSLoader::load(
     __PACKAGE__,
-    $gather::{VERSION} ? ${ $gather::{VERSION} } : (),
+    $List::Gather::{VERSION} ? ${ $List::Gather::{VERSION} } : (),
 );
 
 my @keywords;
@@ -22,6 +22,8 @@ use Sub::Exporter -setup => {
 };
 
 =head1 SYNOPSIS
+
+  use List::Gather;
 
   my @list = gather {
       # Try to extract odd numbers and odd number names...

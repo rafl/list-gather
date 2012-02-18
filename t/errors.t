@@ -3,7 +3,7 @@ use warnings;
 use Test::More 0.89;
 use Test::Fatal;
 
-use gather;
+use List::Gather;
 
 my ($taker) = gather {
     take sub { take 42 };

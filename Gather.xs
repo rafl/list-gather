@@ -72,8 +72,8 @@ myck_entersub_take (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
   PERL_UNUSED_ARG(namegv);
   PERL_UNUSED_ARG(protosv);
 
-  gatherer_offset = pad_findmy("@gather::gatherer",
-                               sizeof("@gather::gatherer") - 1, 0);
+  gatherer_offset = pad_findmy("@List::Gather::gatherer",
+                               sizeof("@List::Gather::gatherer") - 1, 0);
 
   if (gatherer_offset == NOT_IN_PAD)
     croak("illegal use of take outside of gather");
@@ -160,14 +160,14 @@ mygenop_padav (pTHX_ U32 flags)
                  (flags & GENOP_GATHER_INTRO) ? (OPpLVAL_INTRO<<8) : 0);
 
   if (flags & GENOP_GATHER_INTRO) {
-    pvarop->op_targ = pad_add_my_array_pvn(aTHX_ "@gather::gatherer",
-                                           sizeof("@gather::gatherer") - 1);
+    pvarop->op_targ = pad_add_my_array_pvn(aTHX_ "@List::Gather::gatherer",
+                                           sizeof("@List::Gather::gatherer") - 1);
     pvarop->op_ppaddr = pp_my_padav;
     PL_hints |= HINT_BLOCK_SCOPE;
   }
   else {
-    pvarop->op_targ = pad_findmy("@gather::gatherer",
-                                 sizeof("@gather::gatherer") - 1, 0);
+    pvarop->op_targ = pad_findmy("@List::Gather::gatherer",
+                                 sizeof("@List::Gather::gatherer") - 1, 0);
   }
 
   return pvarop;
@@ -180,8 +180,8 @@ myck_entersub_gathered (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 
   entersubop = ck_entersub_args_proto(entersubop, namegv, protosv);
 
-  gatherer_offset = pad_findmy("@gather::gatherer",
-                               sizeof("@gather::gatherer") - 1, 0);
+  gatherer_offset = pad_findmy("@List::Gather::gatherer",
+                               sizeof("@List::Gather::gatherer") - 1, 0);
 
   if (gatherer_offset == NOT_IN_PAD)
     croak("illegal use of gathered outside of gather");
@@ -228,7 +228,7 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   return op_scope(blkop);
 }
 
-MODULE = gather  PACKAGE = gather
+MODULE = List::Gather  PACKAGE = List::Gather
 
 void
 gather (...)
@@ -253,9 +253,9 @@ BOOT:
 {
   CV *gather_cv, *take_cv, *gathered_cv;
 
-  gather_cv = get_cv("gather::gather", 0);
-  take_cv = get_cv("gather::take", 0);
-  gathered_cv = get_cv("gather::gathered", 0);
+  gather_cv = get_cv("List::Gather::gather", 0);
+  take_cv = get_cv("List::Gather::take", 0);
+  gathered_cv = get_cv("List::Gather::gathered", 0);
 
   cv_set_call_parser(gather_cv, myparse_args_gather, &PL_sv_undef);
 
