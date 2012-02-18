@@ -97,6 +97,10 @@ Executes the block it has been provided with, collecting all arguments passed to
 C<take> calls within it. After execution, the list of values collected is
 returned.
 
+Note that block C<gather> executes is equivalent to a C<do BLOCK>. It is neither
+a code nor a loop. Loop control keywords, such as C<next> and C<last>, as well
+as C<return> will behave accordingly.
+
 Parens around the C<gather> block are optional.
 
 =func take
