@@ -29,19 +29,14 @@ use Sub::Exporter -setup => {
   use List::Gather;
 
   my @list = gather {
-      # Try to extract odd numbers and odd number names...
-      for (@data) {
-          if (/(one|three|five|seven|nine)$/) {
-              take qq{'$_'};
-          }
-          elsif (/^\d+$/ && $_ %2) {
-              take $_;
-          }
+      while (<$fh>) {
+          next if /^\s*$/;
+          next if /^\s*#/;
+          take $_ if some_predicate($_);
       }
 
-      # But use the default set if there aren't any of either...
       take @defaults unless gathered;
-  }
+  };
 
 =head1 DESCRIPTION
 
