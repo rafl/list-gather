@@ -48,6 +48,45 @@ call's argument list to an implicitly created array.
 
 C<gather> returns the list of values taken during its block's execution.
 
+=head1 EXAMPLES
+
+  my @interesting_child_nodes = gather {
+      for my $n (@nodes) {
+          take $n->all_children
+              if $n->is_interesting;
+      }
+  };
+
+  my @last_10_events = gather {
+      while ($log->has_event) {
+          take $log->next_event;
+      }
+
+      shift gathered while gathered > 10;
+  };
+
+  my @search_results = gather {
+      $user_interface->register_status_callback(sub {
+          sprintf "Searching... Found %d matches so far", scalar gathered;
+      });
+
+      wait_for_search_results(sub {
+          my ($result) = @_;
+          take $result;
+      }, @search_terms);
+
+      $user_interface->register_status_callback(sub {
+          sprintf "Found a total of %d", scalar gathered;
+      });
+  };
+
+  my @leaf_nodes = gather {
+      $graph->visit_all_nodes_recursively(sub {
+          my ($node) = @_;
+          take $node if $node->is_leaf;
+      }
+  };
+
 =func gather
 
   gather { ... };
