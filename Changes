@@ -1,3 +1,6 @@
+0.05  Sun, 19 Feb 2012 00:21:47 +0100
+  * Minor documentation improvements
+
 0.04  Sat, 18 Feb 2012 22:26:42 +0100
   * Stop declaring a B::Hooks::EndOfScope dependency in META - the module is
     only needed on old perls
