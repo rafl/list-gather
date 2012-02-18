@@ -4,6 +4,15 @@
 #include "callparser.h"
 #include "XSUB.h"
 
+#define SVt_PADNAME SVt_PVMG
+
+#ifndef COP_SEQ_RANGE_LOW_set
+# define COP_SEQ_RANGE_LOW_set(sv,val) \
+  do { ((XPVNV *)SvANY(sv))->xnv_u.xpad_cop_seq.xlow = val; } while (0)
+# define COP_SEQ_RANGE_HIGH_set(sv,val) \
+  do { ((XPVNV *)SvANY(sv))->xnv_u.xpad_cop_seq.xhigh = val; } while (0)
+#endif
+
 static OP *
 pp_take (pTHX)
 {
@@ -104,15 +113,6 @@ myck_entersub_take (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 
   return gen_take_op(aTHX_ listop, gatherer_offset);
 }
-
-#define SVt_PADNAME SVt_PVMG
-
-#ifndef COP_SEQ_RANGE_LOW_set
-# define COP_SEQ_RANGE_LOW_set(sv,val) \
-  do { ((XPVNV *)SvANY(sv))->xnv_u.xpad_cop_seq.xlow = val; } while (0)
-# define COP_SEQ_RANGE_HIGH_set(sv,val) \
-  do { ((XPVNV *)SvANY(sv))->xnv_u.xpad_cop_seq.xhigh = val; } while (0)
-#endif
 
 static PADOFFSET
 pad_add_my_array_pvn (pTHX_ const char *namepv, STRLEN namelen)
