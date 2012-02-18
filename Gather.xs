@@ -236,9 +236,8 @@ myck_entersub_take (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
   op_free(entersubop);
 
   lastop = cLISTOPx(listop)->op_first;
-  while (lastop->op_sibling != cLISTOPx(listop)->op_last) {
+  while (lastop->op_sibling != cLISTOPx(listop)->op_last)
     lastop = lastop->op_sibling;
-  }
   rv2cvop = lastop->op_sibling;
 
   lastop->op_sibling = NULL;
