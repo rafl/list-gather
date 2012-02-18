@@ -1,2 +1,5 @@
+0.02  Sat, 18 Feb 2012 17:54:02 +0100
+  * Support perl 5.12 in addition to 5.14
+
 0.01  Sat, 18 Feb 2012 01:55:38 +0100  TRIAL
   * Initial release
