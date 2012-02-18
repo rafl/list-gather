@@ -148,6 +148,35 @@ gen_take_op (pTHX_ OP *listop, PADOFFSET gatherer_offset)
   return takeop;
 }
 
+#if !QPARSE_DIRECTLY
+SV *methodwrapper_sv;
+
+static OP *(*methodwrapper_nxck_entersub)(pTHX_ OP *o);
+
+static OP *
+methodwrapper_myck_entersub (pTHX_ OP *entersubop)
+{
+	OP *pushop, *sigop, *realop, *methop;
+
+	pushop = cUNOPx(entersubop)->op_first;
+	if(!pushop->op_sibling)
+      pushop = cUNOPx(pushop)->op_first;
+
+	if((sigop = pushop->op_sibling) && sigop->op_type == OP_CONST &&
+			cSVOPx_sv(sigop) == methodwrapper_sv &&
+			(realop = sigop->op_sibling) &&
+			(methop = realop->op_sibling) &&
+			!methop->op_sibling &&
+			methop->op_type == OP_METHOD_NAMED) {
+		sigop->op_sibling = realop->op_sibling;
+		realop->op_sibling = NULL;
+		op_free(entersubop);
+		return realop;
+	}
+
+	return methodwrapper_nxck_entersub(aTHX_ entersubop);
+}
+
 static OP *
 myck_entersub_gatherer_intro (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 {
@@ -163,6 +192,8 @@ myck_entersub_gatherer_outro (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
   op_free(entersubop);
   return mygenop_padav(aTHX_ 0, namegv);
 }
+
+#endif
 
 static OP *
 myck_entersub_gather (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
@@ -225,37 +256,6 @@ myck_entersub_gathered (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
   op_free(entersubop);
   return mygenop_padav(aTHX_ 0, namegv);
 }
-
-#if !QPARSE_DIRECTLY
-SV *methodwrapper_sv;
-
-static OP *(*methodwrapper_nxck_entersub)(pTHX_ OP *o);
-
-static OP *
-methodwrapper_myck_entersub (pTHX_ OP *entersubop)
-{
-	OP *pushop, *sigop, *realop, *methop;
-
-	pushop = cUNOPx(entersubop)->op_first;
-	if(!pushop->op_sibling)
-      pushop = cUNOPx(pushop)->op_first;
-
-	if((sigop = pushop->op_sibling) && sigop->op_type == OP_CONST &&
-			cSVOPx_sv(sigop) == methodwrapper_sv &&
-			(realop = sigop->op_sibling) &&
-			(methop = realop->op_sibling) &&
-			!methop->op_sibling &&
-			methop->op_type == OP_METHOD_NAMED) {
-		sigop->op_sibling = realop->op_sibling;
-		realop->op_sibling = NULL;
-		op_free(entersubop);
-		return realop;
-	}
-
-	return methodwrapper_nxck_entersub(aTHX_ entersubop);
-}
-
-#endif
 
 static OP *
 myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
