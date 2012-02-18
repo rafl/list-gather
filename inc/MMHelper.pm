@@ -42,7 +42,7 @@ use Devel::CallParser;
 use IO::File;
 
 write_header('${callchecker_h}', Devel::CallChecker::callchecker0_h);
-write_header('${callparser_h}', Devel::CallParser::callparser1_h);
+write_header('${callparser_h}', eval { Devel::CallParser::callparser1_h } || Devel::CallParser::callparser0_h);
 
 sub write_header {
     my (\$header, \$content) = \@_;
