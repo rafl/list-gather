@@ -30,4 +30,15 @@ override _build_WriteMakefile_args => sub {
     };
 };
 
+after register_prereqs => sub {
+    my ($self) = @_;
+
+    $self->zilla->register_prereqs(
+        { phase => 'configure' },
+        'IO::File'           => 0,
+        'Devel::CallChecker' => 0,
+        'Devel::CallParser'  => 0,
+    );
+};
+
 1;
