@@ -358,6 +358,13 @@ _gatherer_outro (...)
 
 #endif
 
+bool
+_QPARSE_DIRECTLY ()
+  CODE:
+    RETVAL = QPARSE_DIRECTLY;
+  OUTPUT:
+    RETVAL
+
 BOOT:
 {
   CV *gather_cv, *take_cv, *gathered_cv;

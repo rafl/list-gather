@@ -6,14 +6,15 @@ use warnings;
 use Devel::CallParser;
 use Devel::CallChecker;
 
-require B::Hooks::EndOfScope;
-
 use XSLoader;
 
 XSLoader::load(
     __PACKAGE__,
     $List::Gather::{VERSION} ? ${ $List::Gather::{VERSION} } : (),
 );
+
+require B::Hooks::EndOfScope
+    unless _QPARSE_DIRECTLY();
 
 my @keywords;
 BEGIN { @keywords = qw(gather take gathered) }
