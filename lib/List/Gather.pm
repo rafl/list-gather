@@ -107,7 +107,7 @@ Parens around the C<gather> block are optional.
 
   take LIST
 
-Collects a C<LIST> of values within the currently executing C<gather> block.
+Collects a C<LIST> of values within the C<gather> block it has been compiled in.
 
 C<take> returns no meaningful value.
 
