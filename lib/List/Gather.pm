@@ -84,6 +84,31 @@ C<gathered> calls outside of the lexical scope of a C<gather> block are compile
 time errors. Calling C<gathered> outside of the dynamic scope of its associated
 C<gather> block is legal.
 
+=head1 SEE ALSO
+
+=for :list
+= L<Syntax::Keyword::Gather>
+A non-lexical gather/take implementation that's otherwise very similar to this one
+= L<Perl6::GatherTake>
+An experimental implementation of a lazily evaluating gather/take
+= L<Perl6::Take>
+A very simple gather/take implementation without lexical scoping
+= L<Perl6::Gather>
+Like L<Syntax::Keyword::Gather>, but reliant on L<Perl6::Export>
+= L<List::Gen>
+A comprehensive suit list generation functions featuring a non-lexical gather/take
+
+=head1 ACKNOWLEDGEMENTS
+
+=for :list
+* Andrew Main (Zefram) E<lt>zefram@fysh.orgE<gt>
+for providing his input in both the design and implementation of this module,
+and writing much of the infrastructure that made this module possible in the
+first place
+* Arthur Axel "fREW" Schmidt E<lt>frioux+cpan@gmail.comE<gt>
+for his input on various aspects of this module as well as the many tests of his
+L<Syntax::Keyword::Gather> module that this module shamelessly stole
+
 =cut
 
 1;
