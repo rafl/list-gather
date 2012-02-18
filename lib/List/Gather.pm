@@ -150,6 +150,8 @@ first place
 * Arthur Axel "fREW" Schmidt E<lt>frioux+cpan@gmail.comE<gt>
 for his input on various aspects of this module as well as the many tests of his
 L<Syntax::Keyword::Gather> module that this module shamelessly stole
+* Dave (autarch) Rolsky <autarch@urth.org> and Jesse (doy) Luehrs E<lt>doy@tozt.netE<gt>
+for helping to improve both documentation and test coverage
 
 =cut
 
