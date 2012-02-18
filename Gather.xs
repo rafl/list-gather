@@ -19,25 +19,25 @@
 
 #define PERL_VERSION_DECIMAL(r,v,s) (r*1000000 + v*1000 + s)
 #define PERL_DECIMAL_VERSION \
-	PERL_VERSION_DECIMAL(PERL_REVISION,PERL_VERSION,PERL_SUBVERSION)
+  PERL_VERSION_DECIMAL(PERL_REVISION,PERL_VERSION,PERL_SUBVERSION)
 #define PERL_VERSION_GE(r,v,s) \
-	(PERL_DECIMAL_VERSION >= PERL_VERSION_DECIMAL(r,v,s))
+  (PERL_DECIMAL_VERSION >= PERL_VERSION_DECIMAL(r,v,s))
 
 #if PERL_VERSION_GE(5,13,0)
 # define lex_stuff_sv_(sv, flags) lex_stuff_sv((sv), (flags))
 # define lex_stuff_pvn_(pv, len, flags) lex_stuff_pvn((pv), (len), (flags))
 #else /* <5.13.0 */
 # define lex_stuff_fixup() \
-		SvCUR_set(PL_parser->linestr, \
-			PL_parser->bufend - SvPVX(PL_parser->linestr))
+  SvCUR_set(PL_parser->linestr, \
+            PL_parser->bufend - SvPVX(PL_parser->linestr))
 # define lex_stuff_sv_(sv, flags) \
-		(lex_stuff_sv((sv), (flags)), lex_stuff_fixup())
+  (lex_stuff_sv((sv), (flags)), lex_stuff_fixup())
 # define lex_stuff_pvn_(pv, len, flags) \
-		(lex_stuff_pvn((pv), (len), (flags)), lex_stuff_fixup())
+  (lex_stuff_pvn((pv), (len), (flags)), lex_stuff_fixup())
 #endif
 
 #define lex_stuff_pvs_(s, flags) \
-		lex_stuff_pvn_((""s""), sizeof(""s"")-1, (flags))
+  lex_stuff_pvn_((""s""), sizeof(""s"")-1, (flags))
 
 #define QPARSE_DIRECTLY PERL_VERSION_GE(5,13,8)
 
@@ -156,25 +156,25 @@ static OP *(*methodwrapper_nxck_entersub)(pTHX_ OP *o);
 static OP *
 methodwrapper_myck_entersub (pTHX_ OP *entersubop)
 {
-	OP *pushop, *sigop, *realop, *methop;
+  OP *pushop, *sigop, *realop, *methop;
 
-	pushop = cUNOPx(entersubop)->op_first;
-	if(!pushop->op_sibling)
-      pushop = cUNOPx(pushop)->op_first;
+  pushop = cUNOPx(entersubop)->op_first;
+  if(!pushop->op_sibling)
+    pushop = cUNOPx(pushop)->op_first;
 
-	if((sigop = pushop->op_sibling) && sigop->op_type == OP_CONST &&
-			cSVOPx_sv(sigop) == methodwrapper_sv &&
-			(realop = sigop->op_sibling) &&
-			(methop = realop->op_sibling) &&
-			!methop->op_sibling &&
-			methop->op_type == OP_METHOD_NAMED) {
-		sigop->op_sibling = realop->op_sibling;
-		realop->op_sibling = NULL;
-		op_free(entersubop);
-		return realop;
-	}
+  if((sigop = pushop->op_sibling) && sigop->op_type == OP_CONST &&
+     cSVOPx_sv(sigop) == methodwrapper_sv &&
+     (realop = sigop->op_sibling) &&
+     (methop = realop->op_sibling) &&
+     !methop->op_sibling &&
+     methop->op_type == OP_METHOD_NAMED) {
+    sigop->op_sibling = realop->op_sibling;
+    realop->op_sibling = NULL;
+    op_free(entersubop);
+    return realop;
+  }
 
-	return methodwrapper_nxck_entersub(aTHX_ entersubop);
+  return methodwrapper_nxck_entersub(aTHX_ entersubop);
 }
 
 static OP *
@@ -339,8 +339,8 @@ gathered (...)
 void
 _stuff(SV *sv)
 PROTOTYPE: $
-CODE:
-	lex_stuff_sv_(sv, 0);
+  CODE:
+    lex_stuff_sv_(sv, 0);
 
 void
 _gatherer_intro (...)
