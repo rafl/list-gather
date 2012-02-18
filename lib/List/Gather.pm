@@ -32,6 +32,7 @@ use Sub::Exporter -setup => {
       while (<$fh>) {
           next if /^\s*$/;
           next if /^\s*#/;
+          last if /^(?:__END__|__DATA__)$/;
           take $_ if some_predicate($_);
       }
 
