@@ -158,10 +158,8 @@ pp_my_padav (pTHX)
 static OP *
 mygenop_padav (pTHX_ U32 flags, GV *op_namegv)
 {
-  OP *pvarop;
-
-  pvarop = newOP(OP_PADAV,
-                 (flags & GENOP_GATHER_INTRO) ? (OPpLVAL_INTRO<<8) : 0);
+  OP *pvarop = newOP(OP_PADAV,
+                     (flags & GENOP_GATHER_INTRO) ? (OPpLVAL_INTRO<<8) : 0);
 
   if (flags & GENOP_GATHER_INTRO) {
     pvarop->op_targ = pad_add_my_array_pvn(aTHX_ STR_WITH_LEN("@List::Gather::gatherer"));
