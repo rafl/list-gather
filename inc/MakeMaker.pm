@@ -14,6 +14,8 @@ override _build_MakeFile_PL_template => sub {
     my $ccflags = MMHelper::ccflags_dyn();
     $tmpl =~ s/^(WriteMakefile\()/\$WriteMakefileArgs{CCFLAGS} = $ccflags;\n\n$1/m;
 
+    $tmpl =~ s/^(WriteMakefile\()/\$WriteMakefileArgs{PREREQ_PM}->{'B::Hooks::EndOfScope'} = 0 if \$] < 5.013008;\n\n$1/m;
+
     $tmpl =~ s/^(use ExtUtils::MakeMaker)/MMHelper::header_generator() . "\n$1"/em
         or die;
 
