@@ -17,6 +17,8 @@
 # define PERL_PADSEQ_INTRO I32_MAX
 #endif /* !PERL_PADSEQ_INTRO */
 
+#define pad_findmy_pvs(n,f) pad_findmy((""n""), (sizeof(""n"") - 1), f)
+
 #define PERL_VERSION_DECIMAL(r,v,s) (r*1000000 + v*1000 + s)
 #define PERL_DECIMAL_VERSION \
   PERL_VERSION_DECIMAL(PERL_REVISION,PERL_VERSION,PERL_SUBVERSION)
@@ -40,7 +42,6 @@
   lex_stuff_pvn_((""s""), sizeof(""s"")-1, (flags))
 
 #define QPARSE_DIRECTLY PERL_VERSION_GE(5,13,8)
-
 
 static PADOFFSET
 pad_add_my_array_pvn (pTHX_ const char *namepv, STRLEN namelen)
@@ -84,8 +85,7 @@ pp_my_padav (pTHX)
 static PADOFFSET
 pad_findgatherer (pTHX_ GV *namegv)
 {
-  PADOFFSET offset = pad_findmy("@List::Gather::gatherer",
-                                sizeof("@List::Gather::gatherer") - 1, 0);
+  PADOFFSET offset = pad_findmy_pvs("@List::Gather::gatherer", 0);
   if (offset == NOT_IN_PAD)
     croak("illegal use of %s outside of gather", GvNAME(namegv));
 
@@ -192,7 +192,6 @@ myck_entersub_gatherer_outro (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
   op_free(entersubop);
   return mygenop_padav(aTHX_ 0, namegv);
 }
-
 #endif
 
 static OP *
@@ -301,11 +300,11 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   lex_read_unichar(0);
 
   lex_stuff_pvs_("}}", 0);
-  lex_stuff_pvs_(";List::Gather::_stuff(';List::Gather::_gatherer_outro;}')", 0);
-  if (!had_paren)
-    lex_stuff_pvs_("List::Gather::_stuff(')')", 0);
-  else
+  lex_stuff_pvs_("List::Gather::_stuff(';List::Gather::_gatherer_outro;}')", 0);
+  if (had_paren)
     *flagsp |= CALLPARSER_PARENS;
+  else
+    lex_stuff_pvs_("List::Gather::_stuff(')');", 0);
   lex_stuff_pvs_("BEGIN{B::Hooks::EndOfScope::on_scope_end{", 0);
   lex_stuff_pvs_("->x(do{List::Gather::_gatherer_intro;do{", 0);
 
