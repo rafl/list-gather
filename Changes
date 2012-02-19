@@ -1,3 +1,6 @@
+0.06  Sun, 19 Feb 2012 03:45:19 +0100
+  * Restore compatibility with recent perls providing pad_findmy_pvs
+
 0.05  Sun, 19 Feb 2012 00:21:47 +0100
   * Minor documentation improvements
 
