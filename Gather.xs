@@ -184,14 +184,6 @@ myck_entersub_gatherer_intro (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
   op_free(entersubop);
   return mygenop_padav(aTHX_ GENOP_GATHER_INTRO, namegv);
 }
-
-static OP *
-myck_entersub_gatherer_outro (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
-{
-  PERL_UNUSED_ARG(protosv);
-  op_free(entersubop);
-  return mygenop_padav(aTHX_ 0, namegv);
-}
 #endif
 
 static OP *
@@ -299,7 +291,7 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   lex_read_unichar(0);
 
   lex_stuff_pvs_("}}", 0);
-  lex_stuff_pvs_("List::Gather::_stuff(';List::Gather::_gatherer_outro;}')", 0);
+  lex_stuff_pvs_("List::Gather::_stuff(';List::Gather::gathered;}')", 0);
   if (had_paren)
     *flagsp |= CALLPARSER_PARENS;
   else
@@ -347,13 +339,6 @@ _gatherer_intro (...)
     PERL_UNUSED_VAR(items);
     croak("_gatherer_intro called as a function");
 
-void
-_gatherer_outro (...)
-  PROTOTYPE:
-  CODE:
-    PERL_UNUSED_VAR(items);
-    croak("_gatherer_outro called as a function");
-
 #endif
 
 bool
@@ -367,18 +352,15 @@ BOOT:
 {
   CV *gather_cv, *take_cv, *gathered_cv;
 #if !QPARSE_DIRECTLY
-  CV *gatherer_intro_cv, *gatherer_outro_cv;
+  CV *gatherer_intro_cv;
 
   methodwrapper_sv = newSVpvs("");
   methodwrapper_nxck_entersub = PL_check[OP_ENTERSUB];
   PL_check[OP_ENTERSUB] = methodwrapper_myck_entersub;
 
   gatherer_intro_cv = get_cv("List::Gather::_gatherer_intro", 0);
-  gatherer_outro_cv = get_cv("List::Gather::_gatherer_outro", 0);
   cv_set_call_checker(gatherer_intro_cv, myck_entersub_gatherer_intro,
                       (SV*)gatherer_intro_cv);
-  cv_set_call_checker(gatherer_outro_cv, myck_entersub_gatherer_outro,
-                      (SV*)gatherer_outro_cv);
 #endif
 
   gather_cv = get_cv("List::Gather::gather", 0);
