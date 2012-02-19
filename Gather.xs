@@ -17,7 +17,9 @@
 # define PERL_PADSEQ_INTRO I32_MAX
 #endif /* !PERL_PADSEQ_INTRO */
 
-#define pad_findmy_pvs(n,f) pad_findmy((""n""), (sizeof(""n"") - 1), f)
+#ifndef pad_findmy_pvs
+# define pad_findmy_pvs(n,f) pad_findmy((""n""), (sizeof(""n"") - 1), f)
+#endif
 
 #define PERL_VERSION_DECIMAL(r,v,s) (r*1000000 + v*1000 + s)
 #define PERL_DECIMAL_VERSION \
