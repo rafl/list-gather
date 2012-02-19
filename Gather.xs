@@ -104,11 +104,10 @@ mygenop_padav (pTHX_ U32 flags, GV *op_namegv)
     pvarop->op_targ = pad_add_my_array_pvn(aTHX_ STR_WITH_LEN("@List::Gather::gatherer"));
     pvarop->op_ppaddr = pp_my_padav;
     PL_hints |= HINT_BLOCK_SCOPE;
-  }
-  else {
-    pvarop->op_targ = pad_findgatherer(aTHX_ op_namegv);
+    return pvarop;
   }
 
+  pvarop->op_targ = pad_findgatherer(aTHX_ op_namegv);
   return pvarop;
 }
 
