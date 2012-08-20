@@ -109,7 +109,7 @@ Parens around the C<gather> block are optional.
 
 Collects a C<LIST> of values within the C<gather> block it has been compiled in.
 
-C<take> returns no meaningful value.
+C<take> returns all its arguments.
 
 C<take> calls outside of the lexical scope of a C<gather> block are compile time
 errors. Calling C<take> is only legal within the dynamic scope its associated

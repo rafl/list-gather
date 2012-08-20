@@ -127,9 +127,11 @@ pp_take (pTHX)
   while (MARK < SP)
     av_push((AV *)TARG, newSVsv(*++MARK));
 
-  SP = ORIGMARK;
-  if (GIMME_V == G_SCALAR)
-    PUSHs(&PL_sv_undef);
+  if (GIMME != G_ARRAY) {
+    MARK = ORIGMARK;
+    *++MARK = SP > ORIGMARK ? *SP : &PL_sv_undef;
+    SP = MARK;
+  }
 
   RETURN;
 }

@@ -55,15 +55,15 @@ is exception {
 
 () = gather {
     {
-        is take(42), undef;
+        is take(42), 42;
         my @n = take 42;
-        is @n, 0;
+        is @n, 1;
     }
 
     {
-        is take(23, 24, 25), undef;
+        is take(23, 24, 25), 25;
         my @n = take 23, 24, 25;
-        is @n, 0;
+        is @n, 3;
     }
 };
 
