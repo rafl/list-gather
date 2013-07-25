@@ -1,3 +1,6 @@
+0.07  Wed, 24 Jul 2013 15:52:47 -0700
+  * Give take a meaningful return value.
+
 0.06  Sun, 19 Feb 2012 03:45:19 +0100
   * Restore compatibility with recent perls providing pad_findmy_pvs
 
