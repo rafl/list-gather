@@ -253,7 +253,7 @@ myck_entersub_gathered (pTHX_ OP *entersubop, GV *namegv, SV *protosv)
 static OP *
 myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
 {
-  bool had_paren;
+  bool had_paren, is_modifier;
 #if QPARSE_DIRECTLY
   int blk_floor;
   OP *blkop, *initop;
@@ -270,11 +270,16 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
     lex_read_space(0);
   }
 
+  is_modifier = lex_peek_unichar(0) != '{';
+
+  if (is_modifier && had_paren)
+    croak("syntax error");
+
 #if QPARSE_DIRECTLY
   blk_floor = Perl_block_start(aTHX_ 1);
   initop = mygenop_padav(aTHX_ GENOP_GATHER_INTRO, namegv);
   blkop = op_prepend_elem(OP_LINESEQ, initop,
-                          parse_block(0));
+                          is_modifier ? parse_fullstmt(0) : parse_block(0));
   blkop = op_append_elem(OP_LINESEQ, blkop,
                          newSTATEOP(0, NULL, mygenop_padav(aTHX_ 0, namegv)));
   blkop = Perl_block_end(aTHX_ blk_floor, blkop);
@@ -289,8 +294,8 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
 
   return op_scope(blkop);
 #else
-  if (lex_peek_unichar(0) != '{')
-    croak("syntax error");
+  if (is_modifier)
+    croak("syntax error (statement modifier syntax not supported on perls before 5.13.8)");
   lex_read_unichar(0);
 
   lex_stuff_pvs_("}}", 0);
