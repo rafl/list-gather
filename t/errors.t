@@ -43,5 +43,10 @@ if ($] < 5.013008) {
     eval 'gather while (0) { };';
     like $@, qr/syntax error/;
 }
+else {
+    eval 'gather FOO: while (0) { };';
+    like $@, qr/syntax error/;
+}
+
 
 done_testing;

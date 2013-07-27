@@ -279,7 +279,7 @@ myparse_args_gather (pTHX_ GV *namegv, SV *psobj, U32 *flagsp)
   blk_floor = Perl_block_start(aTHX_ 1);
   initop = mygenop_padav(aTHX_ GENOP_GATHER_INTRO, namegv);
   blkop = op_prepend_elem(OP_LINESEQ, initop,
-                          is_modifier ? parse_fullstmt(0) : parse_block(0));
+                          is_modifier ? parse_barestmt(0) : parse_block(0));
   blkop = op_append_elem(OP_LINESEQ, blkop,
                          newSTATEOP(0, NULL, mygenop_padav(aTHX_ 0, namegv)));
   blkop = Perl_block_end(aTHX_ blk_floor, blkop);
