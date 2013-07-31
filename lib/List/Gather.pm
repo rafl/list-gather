@@ -51,11 +51,9 @@ C<gather> returns the list of values taken during its block's execution.
 
 =head1 EXAMPLES
 
-  my @interesting_child_nodes = gather {
-      for my $n (@nodes) {
-          take $n->all_children
-              if $n->is_interesting;
-      }
+  my @interesting_child_nodes = gather for my $n (@nodes) {
+      take $n->all_children
+          if $n->is_interesting;
   };
 
   my @last_10_events = gather {
@@ -92,6 +90,7 @@ C<gather> returns the list of values taken during its block's execution.
 
   gather { ... }
   gather({ ... })
+  gather STMT
 
 Executes the block it has been provided with, collecting all arguments passed to
 C<take> calls within it. After execution, the list of values collected is
